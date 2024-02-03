@@ -33,26 +33,32 @@ public class ErrorChecking
                     message = "Not implemented";
                     statusCode = StatusCodes.Status501NotImplemented;
                     break;
+
                 case SecurityException:
                     message = "Authentication error";
                     statusCode = StatusCodes.Status401Unauthorized;
                     break;
+
                 case NullReferenceException:
                     message = "Null reference caught";
                     statusCode = StatusCodes.Status404NotFound;
                     break;
+
                 case ArgumentException:
                     message = "Argument is incorrect";
                     statusCode = StatusCodes.Status400BadRequest;
                     break;
+
                 case NotFoundException:
                     message = "Entity not found";
                     statusCode = StatusCodes.Status404NotFound;
                     break;
+
                 case DbException:
                     message = "Database error";
                     statusCode = StatusCodes.Status500InternalServerError;
                     break;
+
                 default:
                     message = "General error";
                     statusCode = StatusCodes.Status500InternalServerError;

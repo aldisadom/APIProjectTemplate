@@ -5,7 +5,7 @@ using AutoFixture.Xunit2;
 using Domain.Entities;
 
 using Domain.Exceptions;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
 
@@ -13,18 +13,13 @@ namespace ShopV2.UnitTest.Services;
 
 public class ItemServiceTest
 {
-
     private readonly Mock<IItemRepository> _itemRepositoryMock;
-    private readonly Mock<IShopRepository> _shopRepositoryMock;
     private readonly ItemService _itemService;
-    private readonly ShopService _shopService;
 
     public ItemServiceTest()
     {
         _itemRepositoryMock = new Mock<IItemRepository>();
-        _shopRepositoryMock = new Mock<IShopRepository>();
-        _shopService = new ShopService(_shopRepositoryMock.Object);
-        _itemService = new ItemService(_itemRepositoryMock.Object, _shopService);
+        _itemService = new ItemService(_itemRepositoryMock.Object);
     }
 
     [Theory]
@@ -221,160 +216,5 @@ public class ItemServiceTest
                             .Should().ThrowAsync<NotFoundException>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-    }
-
-    [Theory]
-    [AutoData]
-    public async Task AddToBought_NotThrowException(BuyItemEntity buyItemEntity)
-    {
-        //Arrange
-        _itemRepositoryMock.Setup(m => m.AddToBought(It.Is<BuyItemEntity>
-                                (x => x.ShopId == buyItemEntity.ShopId && x.UserId == buyItemEntity.UserId
-                                && x.ItemId == buyItemEntity.ItemId && x.Price == buyItemEntity.Price && x.Quantity == buyItemEntity.Quantity)));
-        //Act
-        //Assert
-        await _itemService.Invoking(x => x.AddToBought(buyItemEntity))
-                                .Should().NotThrowAsync<Exception>();
-
-        _itemRepositoryMock.Verify(m => m.AddToBought(It.IsAny<BuyItemEntity>()), Times.Once());
-    }
-
-    [Theory]
-    [AutoData]
-    public async Task AddToShop_InvalidItemId_ThrowNotFoundException(ItemEntity item, ShopEntity shop)
-    {
-        //Arrange
-        _itemRepositoryMock.Setup(m => m.Get(item.Id))
-                        .ReturnsAsync((ItemEntity)null!);
-
-        //Act
-        //Assert
-        await _itemService.Invoking(x => x.AddToShop(item.Id, shop.Id))
-                                .Should().ThrowAsync<NotFoundException>();
-
-        _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _shopRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Never());
-        _itemRepositoryMock.Verify(m => m.Update(It.IsAny<ItemEntity>()), Times.Never());
-    }
-
-    [Theory]
-    [AutoData]
-    public async Task AddToShop_InvalidShopId_ThrowNotFoundException(ItemEntity item, ShopEntity shop)
-    {
-        //Arrange
-        _itemRepositoryMock.Setup(m => m.Get(item.Id))
-                             .ReturnsAsync(new ItemEntity { Id = item.Id });
-
-        _shopRepositoryMock.Setup(m => m.Get(shop.Id))
-                        .ReturnsAsync((ShopEntity)null!);
-        //Act
-        //Assert
-        await _itemService.Invoking(x => x.AddToShop(item.Id, shop.Id))
-                                .Should().ThrowAsync<NotFoundException>();
-
-        _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _shopRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _itemRepositoryMock.Verify(m => m.Update(It.IsAny<ItemEntity>()), Times.Never());
-    }
-
-    [Theory]
-    [AutoData]
-    public async Task AddToShop_Valid_EditMultipleLine_ThrowInvalidOperationException(ItemEntity item, ShopEntity shop)
-    {
-        //Arrange
-        _itemRepositoryMock.Setup(m => m.Get(item.Id))
-                             .ReturnsAsync(new ItemEntity { Id = item.Id });
-
-        _shopRepositoryMock.Setup(m => m.Get(shop.Id))
-                        .ReturnsAsync(new ShopEntity { Id = shop.Id });
-
-        _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>(x => x.Id == item.Id)))
-                             .ReturnsAsync(2);
-        //Act
-        //Assert
-        await _itemService.Invoking(x => x.AddToShop(item.Id, shop.Id))
-                                .Should().ThrowAsync<InvalidOperationException>();
-
-        _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _shopRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _itemRepositoryMock.Verify(m => m.Update(It.IsAny<ItemEntity>()), Times.Once());
-    }
-
-    [Theory]
-    [AutoData]
-    public async Task AddToShop_Valid_NotThrowException(ItemEntity item, ShopEntity shop)
-    {
-        //Arrange
-        _itemRepositoryMock.Setup(m => m.Get(item.Id))
-                             .ReturnsAsync(new ItemEntity { Id = item.Id });
-
-        _shopRepositoryMock.Setup(m => m.Get(shop.Id))
-                        .ReturnsAsync(new ShopEntity { Id = shop.Id });
-
-        _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>(x => x.Id == item.Id)))
-                             .ReturnsAsync(1);
-        //Act
-        //Assert
-        await _itemService.Invoking(x => x.AddToShop(item.Id, shop.Id))
-                                .Should().NotThrowAsync<Exception>();
-
-        _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _shopRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _itemRepositoryMock.Verify(m => m.Update(It.IsAny<ItemEntity>()), Times.Once());
-    }
-
-    [Fact]
-    public async Task Buy_InvalidQuantity()
-    {
-        //Arrange
-        uint quantity = 0;
-        ItemDto item = new() { Price = 15.0m, Id = new Guid() };
-
-        //Act
-        //Assert
-        _itemService.Invoking(x => x.GetItemsPrice(It.Is<ItemDto>(x => x.Id == item.Id && x.Price == item.Price), quantity))
-                        .Should().Throw<ArgumentException>();
-    }
-
-    [Theory]
-    [InlineData(10.0, 5, 50.0)]
-    public async Task Buy_NoDiscount(decimal price, uint quantity, decimal totalCost)
-    {
-        //Arrange
-        ItemDto item = new() { Price = price, Id = new Guid() };
-
-        //Act
-        //Assert
-        decimal result = _itemService.GetItemsPrice(item, quantity);
-
-        result.Should().Be(totalCost);
-    }
-
-    [Theory]
-    [InlineData(10.0, 20, 180.0)]
-    public async Task Buy_Discount10Percent(decimal price, uint quantity, decimal totalCost)
-    {
-        //Arrange
-        ItemDto item = new() { Price = price, Id = new Guid() };
-
-        //Act
-        //Assert
-        decimal result = _itemService.GetItemsPrice(item, quantity);
-
-        result.Should().Be(totalCost);
-    }
-
-    [Theory]
-    [InlineData(10.0, 40, 320.0)]
-    public async Task Buy_Discount20Percent(decimal price, uint quantity, decimal totalCost)
-    {
-        //Arrange
-        ItemDto item = new() { Price = price, Id = new Guid() };
-
-        //Act
-        //Assert
-        decimal result = _itemService.GetItemsPrice(item, quantity);
-
-        result.Should().Be(totalCost);
     }
 }
