@@ -1,6 +1,5 @@
 using Application;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebAPI.Middleware;
 
