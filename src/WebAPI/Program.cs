@@ -1,4 +1,5 @@
 using Application;
+using Clients;
 using Infrastructure;
 using Serilog;
 using WebAPI.Middleware;
@@ -10,7 +11,6 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        string? dbConnectionString = builder.Configuration.GetConnectionString("PostgreConnection");
         // Add services to the container.
 
         builder.Services.AddControllers();
@@ -19,7 +19,8 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddApplication();
-        builder.Services.AddInfrastructure(dbConnectionString);
+        builder.Services.AddClients();
+        builder.Services.AddInfrastructure(builder.Configuration);
 
         //change logger
         builder.Logging.ClearProviders();

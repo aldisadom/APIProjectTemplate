@@ -1,11 +1,12 @@
 ﻿using Application.DTO.Item;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 
 namespace Application.Services;
 
-public class ItemService
+public class ItemService : IItemService
 {
     private readonly IItemRepository _itemRepository;
 

@@ -1,5 +1,5 @@
 using Application.DTO.Item;
-using Application.Services;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -11,9 +11,9 @@ namespace WebAPI.Controllers;
 [Route("v1/[controller]")]
 public class ItemController : ControllerBase
 {
-    private readonly ItemService _itemService;
+    private readonly IItemService _itemService;
 
-    public ItemController(ItemService itemService)
+    public ItemController(IItemService itemService)
     {
         _itemService = itemService;
     }

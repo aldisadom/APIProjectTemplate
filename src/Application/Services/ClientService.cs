@@ -1,17 +1,18 @@
-﻿using Clients;
+﻿using Application.Interfaces;
+using Clients;
 using Domain.Clients;
 using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Application.Services;
 
-public class ClientService
+public class ClientService : IClientService
 {
     private readonly IClient _client;
 
-    public ClientService(IClient openExchangeRates)
+    public ClientService(IClient client)
     {
-        _client = openExchangeRates;
+        _client = client;
     }
 
     public async Task<ClientEntity> GetRates(DateTime date)
