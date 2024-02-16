@@ -36,5 +36,3 @@ jobs:
     - name: Run tests
       run: |
         dotnet test --configuration ${DOTNET_CONFIGURATION=Release} ./tests/xUnitTests /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\"
-        cd ./tests/xUnitTests
-        dotnet reportgenerator -reports:coverage.opencover.xml -targetdir:coverage-reports/
