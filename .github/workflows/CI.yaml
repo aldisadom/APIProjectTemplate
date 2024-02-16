@@ -11,7 +11,7 @@ on:
 
 env:
   DOTNET_VERSION: 8.0.x
-  PROJECT: WebAPIProjectTemplate.sln
+  PROJECT_NAME: WebAPIProjectTemplate.sln
   TESTS_LOCATION: ./tests/xUnitTests
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Build
-      run: dotnet build ${{ PROJECT }}
+      run: dotnet build ${{ env.PROJECT_NAME }}
 
   test:
     name: Test
@@ -37,4 +37,4 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Run tests
       run: |
-        dotnet test --configuration ${DOTNET_CONFIGURATION=Release} ${{ TESTS_LOCATION }} /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\"
+        dotnet test --configuration ${DOTNET_CONFIGURATION=Release} ${{ env.TESTS_LOCATION }} /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\"
