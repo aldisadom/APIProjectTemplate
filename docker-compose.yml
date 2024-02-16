@@ -6,12 +6,14 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: VerySafePassword
+      POSTGRES_PASSWORD: postgres
     ports:
-     - "2399:5432"
+     - "5437:5432"
 
   webapi:
     image: ${DOCKER_REGISTRY-}webapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=LocalDocker
     build:
       context: .
       dockerfile: src/WebAPI/Dockerfile
