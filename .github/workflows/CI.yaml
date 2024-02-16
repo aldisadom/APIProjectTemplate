@@ -2,69 +2,39 @@
 
 name: CI/CD Pipeline
 
-env:
-  PROJECT_FILE_PATH: src\WebAPI\WebAPI.csproj
-  TESTS_FILE_PATH: tests\xUnitTests
-
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+  release:
+    types: [published]
+
+env:
+  DOTNET_VERSION: 8.0.x
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build
+    runs-on: [self-hosted, linux]
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore NuGet packages
-        run: dotnet restore
-      - name: Build the solution
-        run: dotnet build WebAPIProjectTemplate.sln
-      - name: Publish build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: .
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Build
+      run: dotnet build WebAPIProjectTemplate.sln
 
   test:
-    runs-on: ubuntu-latest
+    name: Test
+    runs-on: [self-hosted, linux]
     needs: build
     steps:
-      - uses: actions/checkout@v3
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-          path: .
-      - name: Run unit tests
-        run: dotnet test --configuration Release ${env:TESTS_FILE_PATH}
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-          path: .
-      # Add your specific publishing steps here (e.g., NuGet package creation, versioning)
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: publish
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-          path: .
-      # Add your specific deployment steps here (e.g., Azure deployment using downloaded artifacts)
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Run tests
+      run: |
+        dotnet test --configuration ${DOTNET_CONFIGURATION=Release} ./tests/xUnitTests /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover\"
+        cd ./tests/xUnitTests
+        dotnet reportgenerator -reports:coverage.opencover.xml -targetdir:coverage-reports/
