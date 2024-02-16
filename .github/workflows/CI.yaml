@@ -1,4 +1,4 @@
-# This file defines a workflow that runs tests and deploys your application on push to the main branch
+# This file defines a workflow with separate jobs for build, test, publish, and deploy
 
 name: CI/CD Pipeline
 
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,34 +19,46 @@ jobs:
         run: dotnet restore
       - name: Build the solution
         run: dotnet build --configuration Release
-      - name: Run unit tests
-        run: dotnet test --configuration Release
-      - name: Publish artifacts
+      - name: Publish build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts
-          path: **/bin/Release/**
+          name: build-artifacts
+          path: .
 
-  deploy-to-azure:
+  test:
     runs-on: ubuntu-latest
-    needs: build-and-test
-    if: success()  # Only deploy if build and tests pass
+    needs: build
     steps:
       - uses: actions/checkout@v3
-      - name: Download artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
-          name: artifacts
+          name: build-artifacts
           path: .
-      - name: Azure Login
-        uses: azure/login@v1
+      - name: Run unit tests
+        run: dotnet test --configuration Release
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Replace with your Azure credentials secret
-      - name: Deploy to Azure App Service
-        uses: azure/webdeploy@v1
+          name: build-artifacts
+          path: .
+      # Add your specific publishing steps here (e.g., NuGet package creation, versioning)
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
         with:
-          name: your-app-service-name
-          package: .
-          slot-label: Staging  # Optional slot for deployment staging
-          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE }}  # Replace with your publish profile secret
+          name: build-artifacts
+          path: .
+      # Add your specific deployment steps here (e.g., Azure deployment using downloaded artifacts)
 
