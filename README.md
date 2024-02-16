@@ -43,7 +43,7 @@
 *** I hope that others will also help to improve and add various language versions
 -->
 <p align="center">
-    <a href="/docs/README_zh_cn.md">简体中文</a>
+    <a href="/docs/README_en.md">English</a>
     <!--
     ·
     <a href="/docs/README_fr.md">Français </a>
@@ -259,6 +259,7 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+<!-- git -->
 [contributors-shield]: https://img.shields.io/github/contributors/aldisadom/APIProjectTemplate.svg?style=for-the-badge
 [contributors-url]: https://github.com/aldisadom/APIProjectTemplate/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/aldisadom/APIProjectTemplate.svg?style=for-the-badge
@@ -269,10 +270,16 @@ Use this space to list resources you find helpful and would like to give credit 
 [issues-url]: https://github.com/aldisadom/APIProjectTemplate/issues
 [license-shield]: https://img.shields.io/github/license/aldisadom/APIProjectTemplate.svg?style=for-the-badge
 [license-url]: https://github.com/aldisadom/APIProjectTemplate/blob/master/LICENSE.txt
+
+<!-- my links -->
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
+[linkedin-url]: https://linkedin.com/in/aldis-adomavicius/
+
+<!-- product links -->
 [product-screenshot]: images/screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+
+<!-- used tools logos -->
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/

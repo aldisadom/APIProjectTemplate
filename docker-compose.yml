@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: VerySafePassword
+    ports:
+     - "2399:5432"
+
+  webapi:
+    image: ${DOCKER_REGISTRY-}webapi
+    build:
+      context: .
+      dockerfile: src/WebAPI/Dockerfile
+    ports:
+     - "8090:8080"
+     - "8091:8081"

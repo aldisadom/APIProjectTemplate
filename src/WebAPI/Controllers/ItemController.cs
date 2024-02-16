@@ -1,6 +1,5 @@
-using Application.DTO;
 using Application.DTO.Item;
-using Application.Services;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -12,9 +11,9 @@ namespace WebAPI.Controllers;
 [Route("v1/[controller]")]
 public class ItemController : ControllerBase
 {
-    private readonly ItemService _itemService;
+    private readonly IItemService _itemService;
 
-    public ItemController(ItemService itemService)
+    public ItemController(IItemService itemService)
     {
         _itemService = itemService;
     }
@@ -40,27 +39,5 @@ public class ItemController : ControllerBase
     {
         Guid guid = await _itemService.Add(item);
         return CreatedAtAction(nameof(Get), new { Id = guid }, item);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, ItemAddDto _item)
-    {
-        await _itemService.Update(id, _item);
-        return Ok();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        await _itemService.Delete(id);
-        return Ok();
-    }
-
-    [HttpPut("{id}/addToShop")]
-    [EndpointDescription("hjhhjk")]
-    public async Task<IActionResult> AddToShop(Guid id, GuidDto shop)
-    {
-        await _itemService.AddToShop(id, shop.Id);
-        return Ok();
     }
 }

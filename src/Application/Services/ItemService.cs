@@ -1,19 +1,18 @@
 ﻿using Application.DTO.Item;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
 
 namespace Application.Services;
 
-public class ItemService
+public class ItemService : IItemService
 {
     private readonly IItemRepository _itemRepository;
-    private readonly ShopService _shopService;
 
-    public ItemService(IItemRepository itemRepository, ShopService shopService)
+    public ItemService(IItemRepository itemRepository)
     {
         _itemRepository = itemRepository;
-        _shopService = shopService;
     }
 
     public async Task<ItemDto> Get(Guid id)
@@ -102,18 +101,11 @@ public class ItemService
         return quantity * item.Price * netAmount;
     }
 
-    public async Task AddToBought(BuyItemEntity buy)
-    {
-        await _itemRepository.AddToBought(buy);
-    }
-
     public async Task AddToShop(Guid id, Guid shopId)
     {
         var itemTask = Get(id);
-        var shopTask = _shopService.Get(shopId);
 
         ItemDto item = await itemTask;
-        await shopTask;
 
         ItemEntity itemEntity = new()
         {
