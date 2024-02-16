@@ -2,6 +2,10 @@
 
 name: CI/CD Pipeline
 
+env:
+  PROJECT_FILE_PATH: src\WebAPI\WebAPI.csproj
+  TESTS_FILE_PATH: tests\xUnitTests\xUnitTests.csproj
+
 on:
   push:
     branches: [ master ]
@@ -18,9 +22,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${env:PROJECT_FILE_PATH}
       - name: Build the solution
-        run: dotnet build --configuration Release src\WebAPI\WebAPI.csproj
+        run: dotnet build --configuration Release ${env:PROJECT_FILE_PATH}
       - name: Publish build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -38,7 +42,7 @@ jobs:
           name: build-artifacts
           path: .
       - name: Run unit tests
-        run: dotnet test --configuration Release tests\xUnitTests\xUnitTests.csproj
+        run: dotnet test --configuration Release ${env:TESTS_FILE_PATH}
 
   publish:
     runs-on: ubuntu-latest
