@@ -20,7 +20,7 @@ jobs:
       - name: Restore NuGet packages
         run: dotnet restore
       - name: Build the solution
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release src\WebAPI\WebAPI.csproj
       - name: Publish build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -38,7 +38,7 @@ jobs:
           name: build-artifacts
           path: .
       - name: Run unit tests
-        run: dotnet test --configuration Release
+        run: dotnet test --configuration Release tests\xUnitTests\xUnitTests.csproj
 
   publish:
     runs-on: ubuntu-latest
