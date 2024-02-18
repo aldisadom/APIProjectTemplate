@@ -16,47 +16,43 @@ public class ItemRepository : IItemRepository
 
     public async Task<ItemEntity?> Get(Guid id)
     {
-        var queryArguments = new
-        {
-            Id = id
-        };
+        string sql = @"SELECT * FROM items
+                        WHERE id=@Id";
 
-        return await _dbConnection.QuerySingleAsync<ItemEntity>("SELECT * FROM items" +
-                                                " WHERE id=@Id AND \"isDeleted\"=false", queryArguments);
+        return await _dbConnection.QuerySingleAsync<ItemEntity>(sql, new { id });
     }
 
     public async Task<IEnumerable<ItemEntity>> Get()
     {
-        return await _dbConnection.QueryAsync<ItemEntity>("SELECT * FROM items" +
-                                                " WHERE \"isDeleted\"=false");
+        string sql = @"SELECT * FROM items";
+
+        return await _dbConnection.QueryAsync<ItemEntity>(sql);
     }
 
     public async Task<Guid> Add(ItemEntity item)
     {
-        string sql = $"INSERT INTO items" +
-                        " (name, price, \"shopId\")" +
-                        " VALUES (@Name, @Price, @ShopId)" +
-                        "RETURNING id";
+        string sql = @"INSERT INTO items
+                        (name, price, shop_id)
+                        VALUES (@Name, @Price, @ShopId)
+                        RETURNING id";
 
         return await _dbConnection.ExecuteScalarAsync<Guid>(sql, item);
     }
 
     public async Task<int> Update(ItemEntity item)
     {
-        return await _dbConnection.ExecuteAsync("UPDATE items" +
-                                        " SET name=@Name,price=@Price,\"shopId\"=@ShopId" +
-                                        " WHERE id=@Id AND \"isDeleted\"=false", item);
+        string sql = @"UPDATE items
+                        SET name=@Name, price=@Price, shop_id=@ShopId
+                        WHERE id=@Id";
+
+        return await _dbConnection.ExecuteAsync(sql, item);
     }
 
     public async Task Delete(Guid id)
     {
-        var queryArguments = new
-        {
-            Id = id
-        };
+        string sql = @"DELETE FROM items
+                        WHERE id=@Id";
 
-        await _dbConnection.ExecuteAsync("UPDATE items" +
-                                        " SET \"isDeleted\"=true" +
-                                        " WHERE id=@Id AND \"isDeleted\"=false", queryArguments);
+        await _dbConnection.ExecuteAsync(sql, new { id });
     }
 }
