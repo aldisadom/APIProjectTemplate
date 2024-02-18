@@ -1,8 +1,9 @@
-﻿using Application.DTO.Item;
-using Application.Interfaces;
+﻿using Application.Interfaces;
+using Contracts.Requests;
+using Contracts.Responses;
 using Domain.Entities;
 using Domain.Exceptions;
-using Domain.Interfaces.Repositories;
+using Domain.Interfaces;
 
 namespace Application.Services;
 
@@ -15,11 +16,11 @@ public class ItemService : IItemService
         _itemRepository = itemRepository;
     }
 
-    public async Task<ItemDto> Get(Guid id)
+    public async Task<ItemResponce> Get(Guid id)
     {
         ItemEntity item = await _itemRepository.Get(id) ?? throw new NotFoundException("Item not found in DB");
 
-        ItemDto itemDto = new()
+        ItemResponce itemDto = new()
         {
             Id = id,
             Name = item.Name,
@@ -30,15 +31,15 @@ public class ItemService : IItemService
         return itemDto;
     }
 
-    public async Task<List<ItemDto>> Get()
+    public async Task<List<ItemResponce>> Get()
     {
-        List<ItemDto> items = [];
+        List<ItemResponce> items = [];
         IEnumerable<ItemEntity> itemEntities = await _itemRepository.Get();
 
         if (!itemEntities.Any())
             return [];
 
-        items = itemEntities.Select(i => new ItemDto()
+        items = itemEntities.Select(i => new ItemResponce()
         {
             Id = i.Id,
             Name = i.Name,
@@ -49,7 +50,7 @@ public class ItemService : IItemService
         return items;
     }
 
-    public async Task<Guid> Add(ItemAddDto item)
+    public async Task<Guid> Add(ItemAddRequest item)
     {
         ItemEntity itemEntity = new()
         {
@@ -60,7 +61,7 @@ public class ItemService : IItemService
         return await _itemRepository.Add(itemEntity);
     }
 
-    public async Task Update(Guid id, ItemAddDto item)
+    public async Task Update(Guid id, ItemAddRequest item)
     {
         await Get(id);
 
@@ -85,7 +86,7 @@ public class ItemService : IItemService
         await _itemRepository.Delete(id);
     }
 
-    public decimal GetItemsPrice(ItemDto item, uint quantity)
+    public decimal GetItemsPrice(ItemResponce item, uint quantity)
     {
         if (quantity <= 0)
             throw new ArgumentException("Amount must be more than 0");
@@ -105,7 +106,7 @@ public class ItemService : IItemService
     {
         var itemTask = Get(id);
 
-        ItemDto item = await itemTask;
+        ItemResponce item = await itemTask;
 
         ItemEntity itemEntity = new()
         {

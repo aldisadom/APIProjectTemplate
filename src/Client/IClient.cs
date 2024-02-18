@@ -4,5 +4,5 @@ namespace Clients;
 
 public interface IClient
 {
-    public Task<ClientDataResponse> Get(DateTime date);
+    Task<ClientDataResponse> Get(DateTime date);
 }

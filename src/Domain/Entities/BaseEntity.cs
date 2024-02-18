@@ -9,6 +9,4 @@ public class BaseEntity
     public DateTime? Modified { get; set; }
 
     public string? ModifiedBy { get; set; }
-
-    public bool IsDeleted { get; set; }
 }

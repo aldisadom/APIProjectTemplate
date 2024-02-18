@@ -1,11 +1,12 @@
-﻿using Application.DTO.Item;
-using Application.Services;
+﻿using Application.Services;
 using AutoFixture;
 using AutoFixture.Xunit2;
+using Contracts.Requests;
+using Contracts.Responses;
 using Domain.Entities;
 
 using Domain.Exceptions;
-using Domain.Interfaces.Repositories;
+using Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -31,7 +32,7 @@ public class ItemServiceTest
                         .ReturnsAsync(new ItemEntity { Id = id });
 
         //Act
-        ItemDto result = await _itemService.Get(id);
+        ItemResponce result = await _itemService.Get(id);
 
         //Assert
         result.Id.Should().Be(id);
@@ -97,11 +98,11 @@ public class ItemServiceTest
     {
         //Arrange
         _itemRepositoryMock.Setup(m => m.Add(It.Is<ItemEntity>
-                                (x => x.Name == name && x.Price == price && x.IsDeleted == false)))
+                                (x => x.Name == name && x.Price == price)))
                                  .ReturnsAsync(id);
 
         //Act
-        Guid result = await _itemService.Add(new ItemAddDto { Name = name, Price = price });
+        Guid result = await _itemService.Add(new ItemAddRequest { Name = name, Price = price });
 
         //Assert
         result.Should().Be(id);
@@ -120,11 +121,11 @@ public class ItemServiceTest
 
         _itemRepositoryMock.Setup(m => m.Get(id))
                                 .ReturnsAsync(new ItemEntity
-                                { Id = id, Name = name, Price = price, IsDeleted = false });
+                                { Id = id, Name = name, Price = price});
 
         //Act
         //Assert
-        await _itemService.Invoking(x => x.Update(id, new ItemAddDto
+        await _itemService.Invoking(x => x.Update(id, new ItemAddRequest
         { Name = name, Price = price }))
                                         .Should().NotThrowAsync<Exception>();
 
@@ -149,7 +150,7 @@ public class ItemServiceTest
 
         //Act
         //Assert
-        await _itemService.Invoking(x => x.Update(id, new ItemAddDto { Name = name, Price = price }))
+        await _itemService.Invoking(x => x.Update(id, new ItemAddRequest { Name = name, Price = price }))
                             .Should().ThrowAsync<InvalidOperationException>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
@@ -173,7 +174,7 @@ public class ItemServiceTest
 
         //Act
         //Assert
-        await _itemService.Invoking(x => x.Update(id, new ItemAddDto { Name = name, Price = price }))
+        await _itemService.Invoking(x => x.Update(id, new ItemAddRequest { Name = name, Price = price }))
                             .Should().ThrowAsync<NotFoundException>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());

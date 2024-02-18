@@ -7,15 +7,16 @@ using Newtonsoft.Json;
 
 namespace Infrastructure.Clients;
 
-public class Clienta : IClient
+public class OpenExchangeClient : IClient
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly string _apiKey = string.Empty;
 
-    public Clienta(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public OpenExchangeClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory;
-        _apiKey = configuration["APIKey"] ?? throw new ClientAPIException("API key not provided");
+        _apiKey = configuration["APIKey"] 
+                ?? throw new ClientAPIException("API key not provided");
     }
 
     public async Task<ClientDataResponse> Get(DateTime date)

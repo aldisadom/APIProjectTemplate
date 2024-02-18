@@ -1,14 +1,15 @@
-﻿using Application.DTO.Item;
+﻿using Contracts.Requests;
+using Contracts.Responses;
 
 namespace Application.Interfaces;
 
 public interface IItemService
 {
-    Task<Guid> Add(ItemAddDto item);
+    Task<Guid> Add(ItemAddRequest item);
     Task AddToShop(Guid id, Guid shopId);
     Task Delete(Guid id);
-    Task<List<ItemDto>> Get();
-    Task<ItemDto> Get(Guid id);
-    decimal GetItemsPrice(ItemDto item, uint quantity);
-    Task Update(Guid id, ItemAddDto item);
+    Task<List<ItemResponce>> Get();
+    Task<ItemResponce> Get(Guid id);
+    decimal GetItemsPrice(ItemResponce item, uint quantity);
+    Task Update(Guid id, ItemAddRequest item);
 }
