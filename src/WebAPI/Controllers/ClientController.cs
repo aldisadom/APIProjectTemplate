@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 /// <summary>
-/// This is a sample controller for demonstrating XML comments in ASP.NET Core.
+/// This is a OpenExchangeRates Client example how to get rates for date
 /// </summary>
 [ApiController]
 [Route("v1/[controller]")]
@@ -12,15 +12,20 @@ public class ClientController : ControllerBase
 {
     private readonly IClientService _clientService;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="clientService"></param>
     public ClientController(IClientService clientService)
     {
         _clientService = clientService;
     }
 
     /// <summary>
-    /// Gets all items
+    /// Get rates for selected day
     /// </summary>
-    /// <returns>list of items</returns>
+    /// <param name="date">Rates day</param>
+    /// <returns></returns>
     [HttpGet("{date}")]
     public async Task<IActionResult> Get(DateTime date)
     {

@@ -3,9 +3,8 @@ version: '3.4'
 services:
   webapi:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_HTTP_PORTS=8070
+      - ASPNETCORE_HTTPS_PORTS=8071
     ports:
       - "8080"
       - "8081"

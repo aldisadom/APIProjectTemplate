@@ -1,63 +1,19 @@
-using Application;
-using Clients;
-using Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Serilog;
+using WebAPI.Capabilities;
 using WebAPI.Middleware;
 
 namespace WebAPI;
 
+/// <summary>
+/// 
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="args"></param>
     public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
-        // Add services to the container.
-
-        builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        builder.Services.AddApplication();
-        builder.Services.AddClients();
-
-
-        string dbConnectionString = builder.Configuration.GetConnectionString("PostgreConnection")
-            ?? throw new ArgumentNullException("Postgre connection string not found");
-        builder.Services.AddInfrastructure(dbConnectionString);
-
-        //change logger
-        builder.Logging.ClearProviders();
-        var logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(builder.Configuration)
-            .Enrich.FromLogContext()
-            .CreateLogger();
-        builder.Logging.AddSerilog(logger);
-
-        builder.Services.AddHttpClient();
-
-        var app = builder.Build();
-
-        //custom middleware
-        app.UseMiddleware<ErrorChecking>();
-
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API Name v1"));
-        }
-
-        app.UseHttpsRedirection();
-        app.UseAuthorization();
-        app.MapControllers();
-
-        app.Run();
-    }
-}
-/*
- *     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -84,4 +40,5 @@ public class Program
 
         app.Run();
     }
- */ 
+}
+

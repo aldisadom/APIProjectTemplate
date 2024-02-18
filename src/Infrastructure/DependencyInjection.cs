@@ -14,5 +14,7 @@ public static class DependencyInjection
 
         //inject Repository
         services.AddScoped<IItemRepository, ItemRepository>();
+
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
 }

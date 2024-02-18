@@ -5,17 +5,30 @@ using System.Security;
 
 namespace WebAPI.Middleware;
 
+/// <summary>
+/// Error handling middleware
+/// </summary>
 public class ErrorChecking
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ErrorChecking> _logger;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="next"></param>
+    /// <param name="logger"></param>
     public ErrorChecking(RequestDelegate next, ILogger<ErrorChecking> logger)
     {
         _next = next;
         _logger = logger;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -65,12 +78,12 @@ public class ErrorChecking
                     break;
             }
 
-            ErrorViewModel errorMessage = new(message, statusCode, e);
+            ErrorModel errorMessage = new(message, statusCode, e);
             await UpdateContextAndLog(errorMessage, context);
         }
     }
 
-    private async Task UpdateContextAndLog(ErrorViewModel errorMessage, HttpContext context)
+    private async Task UpdateContextAndLog(ErrorModel errorMessage, HttpContext context)
     {
         context.Response.StatusCode = errorMessage.StatusCode;
 

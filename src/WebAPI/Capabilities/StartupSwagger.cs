@@ -1,9 +1,18 @@
 ﻿using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace WebAPI.Capabilities;
 
+/// <summary>
+/// Configure swagger services 
+/// </summary>
 public static class StartupSwagger
 {
+    /// <summary>
+    /// Configure swagger services 
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection ConfigureSwagger(this IServiceCollection services)
     {
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -12,17 +21,20 @@ public static class StartupSwagger
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-            var basePath = Directory.GetCurrentDirectory();
-            var xmlFiles = Directory.EnumerateFiles(basePath, "*.xml", SearchOption.AllDirectories);
-            foreach (var xmlFile in xmlFiles)
-            {
-                c.IncludeXmlComments(xmlFile);
-            }            
+            // Set the comments path for the Swagger JSON and UI.
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
         });
 
         return services;
     }
 
+    /// <summary>
+    /// Configure swagger application 
+    /// </summary>
+    /// <param name="app"></param>
+    /// <returns></returns>
     public static IApplicationBuilder UseSwaggerWithUI(this IApplicationBuilder app)
     {
         app.UseSwagger();

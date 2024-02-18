@@ -24,6 +24,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "src\Contracts\
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E609DF34-75C8-4364-91B4-9B0FBA5CEAD7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "migrations", "migrations", "{344F1A52-EF45-4452-A9E5-E85DF261C173}"
+	ProjectSection(SolutionItems) = preProject
+		migrations\dbChangeLog.yaml = migrations\dbChangeLog.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{F4A54032-C55A-4DC0-A5F2-4EBEE93DF1F5}"
+	ProjectSection(SolutionItems) = preProject
+		migrations\sql\001-Create-tabel.sql = migrations\sql\001-Create-tabel.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +75,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4A54032-C55A-4DC0-A5F2-4EBEE93DF1F5} = {344F1A52-EF45-4452-A9E5-E85DF261C173}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD07335F-3666-4F35-8CFE-3158C048976C}

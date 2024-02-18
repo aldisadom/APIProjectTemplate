@@ -15,10 +15,6 @@ COPY ["src/Application/Application.csproj", "src/Application/"]
 COPY ["src/Client/Clients.csproj", "src/Client/"]
 COPY ["src/Domain/Domain.csproj", "src/Domain/"]
 COPY ["src/Contracts/Contracts.csproj", "src/Contracts/"]
-# Copy certificate files
-COPY ${APPDATA}/ASP.NET/Https /https
-# Set permissions for certificate files
-RUN chown -R app:app /https
 RUN dotnet restore "./src/WebAPI/./WebAPI.csproj"
 COPY . .
 WORKDIR "/src/src/WebAPI"

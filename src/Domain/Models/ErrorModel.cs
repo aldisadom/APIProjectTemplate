@@ -1,12 +1,12 @@
 ﻿namespace Infrastructure.Models;
 
-public class ErrorViewModel
+public class ErrorModel
 {
     public int StatusCode { get; set; }
     public string Message { get; set; }
     public string ErrorLocation { get; set; }
 
-    public ErrorViewModel(string errorTypeMessage, int statusCode, Exception e)
+    public ErrorModel(string errorTypeMessage, int statusCode, Exception e)
     {
         Message = errorTypeMessage + ": " + e.Message;
         StatusCode = statusCode;
