@@ -1,5 +1,5 @@
-using Application.DTO.Item;
 using Application.Interfaces;
+using Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -35,7 +35,7 @@ public class ItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(ItemAddDto item)
+    public async Task<IActionResult> Add(ItemAddRequest item)
     {
         Guid guid = await _itemService.Add(item);
         return CreatedAtAction(nameof(Get), new { Id = guid }, item);
