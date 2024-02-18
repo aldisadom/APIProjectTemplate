@@ -121,7 +121,7 @@ public class ItemServiceTest
 
         _itemRepositoryMock.Setup(m => m.Get(id))
                                 .ReturnsAsync(new ItemEntity
-                                { Id = id, Name = name, Price = price});
+                                { Id = id, Name = name, Price = price });
 
         //Act
         //Assert

@@ -5,10 +5,34 @@ services:
     image: postgres
     restart: always
     environment:
+      POSTGRES_DB: Data
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
      - "5437:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@postgres.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+
+  liquibase:
+    image: liquibase/liquibase
+    volumes:
+      - ./migrations:/liquibase/migrations
+    command:
+      - --changeLogFile=/migrations/dbChangeLog.yaml     
+      - --url=jdbc:postgresql://db:5432/Data
+      - --username=postgres
+      - --password=postgres
+      - update
+    ports:
+      - "8085:8080"
 
   webapi:
     image: ${DOCKER_REGISTRY-}webapi
@@ -16,7 +40,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=LocalDocker
     build:
       context: .
-      dockerfile: src/WebAPI/Dockerfile
+      dockerfile: src/WebAPI/DockerfileLocal
     ports:
-     - "8090:8080"
-     - "8091:8081"
+     - "8090:8070"
+     - "8091:8071"

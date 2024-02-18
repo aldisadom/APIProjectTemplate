@@ -15,7 +15,7 @@ public class OpenExchangeClient : IClient
     public OpenExchangeClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory;
-        _apiKey = configuration["APIKey"] 
+        _apiKey = configuration["APIKey"]
                 ?? throw new ClientAPIException("API key not provided");
     }
 
