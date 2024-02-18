@@ -1,6 +1,7 @@
 using Application;
 using Clients;
 using Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using WebAPI.Middleware;
 
@@ -20,7 +21,11 @@ public class Program
 
         builder.Services.AddApplication();
         builder.Services.AddClients();
-        builder.Services.AddInfrastructure(builder.Configuration);
+
+
+        string dbConnectionString = builder.Configuration.GetConnectionString("PostgreConnection")
+            ?? throw new ArgumentNullException("Postgre connection string not found");
+        builder.Services.AddInfrastructure(dbConnectionString);
 
         //change logger
         builder.Logging.ClearProviders();
@@ -51,3 +56,32 @@ public class Program
         app.Run();
     }
 }
+/*
+ *     public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddControllers();
+
+        builder.Services
+            .ConfigureInjection(builder.Configuration)
+            .ConfigureLogging(builder.Configuration)
+            .ConfigureSwagger();
+
+        builder.Host.UseSerilog();
+
+        var app = builder.Build();
+
+        //custom error handling middleware        
+        app.UseMiddleware<ErrorChecking>();
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        app.UseSwaggerWithUI();
+
+        app.Run();
+    }
+ */ 
