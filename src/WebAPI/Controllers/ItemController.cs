@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 /// <summary>
-/// This is a sample controller for demonstrating XML comments in ASP.NET Core.
+/// This is a item controller
 /// </summary>
 [ApiController]
 [Route("v1/[controller]")]
-[ProducesResponseType(typeof(ErrorResponce), StatusCodes.Status500InternalServerError)]
+[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
@@ -32,7 +32,7 @@ public class ItemController : ControllerBase
     /// </summary>
     /// <returns>list of items</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ItemResponce), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ItemResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
         return Ok(await _itemService.Get());
@@ -44,8 +44,8 @@ public class ItemController : ControllerBase
     /// <param name="id">Item ID</param>
     /// <returns>Item properties</returns>
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ItemResponce), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponce), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ItemResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id)
     {
         return Ok(await _itemService.Get(id));
@@ -61,6 +61,6 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> Add(ItemAddRequest item)
     {
         Guid id = await _itemService.Add(item);
-        return CreatedAtAction(nameof(Get), new { id });
+        return CreatedAtAction(nameof(Add), new { id });
     }
 }

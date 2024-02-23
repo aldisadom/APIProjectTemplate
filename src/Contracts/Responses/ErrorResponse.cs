@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Responses;
 
-public class ErrorResponce
+public class ErrorResponse
 {
     public string ErrorMessage { get; set; } = string.Empty;
 }

@@ -32,7 +32,7 @@ public class ItemServiceTest
                         .ReturnsAsync(new ItemEntity { Id = id });
 
         //Act
-        ItemResponce result = await _itemService.Get(id);
+        ItemResponse result = await _itemService.Get(id);
 
         //Assert
         result.Id.Should().Be(id);
@@ -72,7 +72,7 @@ public class ItemServiceTest
         var result = await _itemService.Get();
 
         //Assert
-        result.Count.Should().Be(quantity);
+        result.Items.Count.Should().Be(quantity);
 
         _itemRepositoryMock.Verify(m => m.Get(), Times.Once());
     }
@@ -87,7 +87,7 @@ public class ItemServiceTest
         // Act Assert
         var result = await _itemService.Get();
 
-        result.Count.Should().Be(0);
+        result.Items.Count.Should().Be(0);
 
         _itemRepositoryMock.Verify(m => m.Get(), Times.Once());
     }

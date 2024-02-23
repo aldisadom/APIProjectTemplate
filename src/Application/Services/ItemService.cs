@@ -16,30 +16,32 @@ public class ItemService : IItemService
         _itemRepository = itemRepository;
     }
 
-    public async Task<ItemResponce> Get(Guid id)
+    public async Task<ItemResponse> Get(Guid id)
     {
-        ItemEntity item = await _itemRepository.Get(id) ?? throw new NotFoundException("Item not found in DB");
+        ItemEntity itemEntity = await _itemRepository.Get(id) 
+            ?? throw new NotFoundException("Item not found in DB");
 
-        ItemResponce itemDto = new()
+        ItemResponse itemResponse = new()
         {
             Id = id,
-            Name = item.Name,
-            Price = item.Price,
-            ShopId = item.ShopId,
+            Name = itemEntity.Name,
+            Price = itemEntity.Price,
+            ShopId = itemEntity.ShopId,
         };
 
-        return itemDto;
+        return itemResponse;
     }
 
-    public async Task<List<ItemResponce>> Get()
+    public async Task<ItemListResponse> Get()
     {
-        List<ItemResponce> items = [];
+        
         IEnumerable<ItemEntity> itemEntities = await _itemRepository.Get();
 
+        ItemListResponse items = new ();
         if (!itemEntities.Any())
-            return [];
+            return items;
 
-        items = itemEntities.Select(i => new ItemResponce()
+        items.Items = itemEntities.Select(i => new ItemResponse()
         {
             Id = i.Id,
             Name = i.Name,
@@ -63,9 +65,10 @@ public class ItemService : IItemService
 
     public async Task Update(Guid id, ItemAddRequest item)
     {
-        await Get(id);
+        ItemEntity itemEntity = await _itemRepository.Get(id)
+            ?? throw new NotFoundException("Item not found in DB");
 
-        ItemEntity itemEntity = new()
+        itemEntity = new ItemEntity()
         {
             Id = id,
             Name = item.Name,
@@ -73,52 +76,14 @@ public class ItemService : IItemService
             ShopId = item.ShopId,
         };
 
-        int result = await _itemRepository.Update(itemEntity);
-
-        if (result > 1)
-            throw new InvalidOperationException("Update was performed on multiple rows");
+        await _itemRepository.Update(itemEntity);
     }
 
     public async Task Delete(Guid id)
     {
-        await Get(id);
+        ItemEntity itemEntity = await _itemRepository.Get(id)
+            ?? throw new NotFoundException("Item not found in DB");
 
         await _itemRepository.Delete(id);
-    }
-
-    public decimal GetItemsPrice(ItemResponce item, uint quantity)
-    {
-        if (quantity <= 0)
-            throw new ArgumentException("Amount must be more than 0");
-
-        decimal netAmount;
-        if (quantity > 20)
-            netAmount = 0.8m;
-        else if (quantity > 10)
-            netAmount = 0.9m;
-        else
-            netAmount = 1.0m;
-
-        return quantity * item.Price * netAmount;
-    }
-
-    public async Task AddToShop(Guid id, Guid shopId)
-    {
-        var itemTask = Get(id);
-
-        ItemResponce item = await itemTask;
-
-        ItemEntity itemEntity = new()
-        {
-            Id = id,
-            Name = item.Name,
-            Price = item.Price,
-            ShopId = shopId,
-        };
-
-        int result = await _itemRepository.Update(itemEntity);
-
-        if (result > 1)
-            throw new InvalidOperationException("Update was performed on multiple rows");
     }
 }
