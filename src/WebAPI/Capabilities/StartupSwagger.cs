@@ -26,6 +26,7 @@ public static class StartupSwagger
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         });
+
         return services;
     }
 

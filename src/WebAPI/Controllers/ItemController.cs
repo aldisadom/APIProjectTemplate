@@ -14,17 +14,10 @@ namespace WebAPI.Controllers;
 public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
-    private readonly ILogger<ItemController> _logger;
 
-    /// <summary>
-    /// Default constructor
-    /// </summary>
-    /// <param name="itemService"></param>
-    /// <param name="logger"></param>
-    public ItemController(IItemService itemService, ILogger<ItemController> logger)
+    public ItemController(IItemService itemService)
     {
         _itemService = itemService;
-        _logger = logger;
     }
 
     /// <summary>
@@ -38,11 +31,6 @@ public class ItemController : ControllerBase
         return Ok(await _itemService.Get());
     }
 
-    /// <summary>
-    /// Get single item
-    /// </summary>
-    /// <param name="id">Item ID</param>
-    /// <returns>Item properties</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -51,11 +39,6 @@ public class ItemController : ControllerBase
         return Ok(await _itemService.Get(id));
     }
 
-    /// <summary>
-    /// Adds item to shop
-    /// </summary>
-    /// <param name="item">Item data to add</param>
-    /// <returns>ID of item</returns>
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<IActionResult> Add(ItemAddRequest item)
