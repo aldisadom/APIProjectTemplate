@@ -8,5 +8,5 @@ namespace Contracts.Responses;
 
 public class ItemAddResponse
 {
-    Guid Id { get; set; }
+    public Guid Id { get; set; }
 }

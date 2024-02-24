@@ -2,6 +2,9 @@ using Application.Interfaces;
 using Contracts.Requests;
 using Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.Examples;
+using System.Net;
+using WebAPI.SwaggerExamples.Item;
 
 namespace WebAPI.Controllers;
 
@@ -26,6 +29,7 @@ public class ItemController : ControllerBase
     /// <returns>list of items</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ItemResponse), StatusCodes.Status200OK)]
+    [SwaggerResponseExample((HttpStatusCode)StatusCodes.Status200OK, typeof(ItemAdd))]
     public async Task<IActionResult> Get()
     {
         return Ok(await _itemService.Get());

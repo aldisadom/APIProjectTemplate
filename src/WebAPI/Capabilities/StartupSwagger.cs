@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using Swashbuckle.Examples;
 using System.Reflection;
 
 namespace WebAPI.Capabilities;
