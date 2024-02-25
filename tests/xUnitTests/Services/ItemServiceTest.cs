@@ -1,8 +1,7 @@
-﻿using Application.Services;
+﻿using Application.Models;
+using Application.Services;
 using AutoFixture;
 using AutoFixture.Xunit2;
-using Contracts.Requests;
-using Contracts.Responses;
 using Domain.Entities;
 
 using Domain.Exceptions;
@@ -32,7 +31,7 @@ public class ItemServiceTest
                         .ReturnsAsync(new ItemEntity { Id = id });
 
         //Act
-        ItemResponce result = await _itemService.Get(id);
+        ItemModel result = await _itemService.Get(id);
 
         //Assert
         result.Id.Should().Be(id);
@@ -40,12 +39,11 @@ public class ItemServiceTest
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
     }
 
-    [Fact]
-    public async Task GetId_GivenInvalidId_ThrowNotFoundException()
+    [Theory]
+    [AutoData]
+    public async Task GetId_GivenInvalidId_ThrowNotFoundException(Guid id)
     {
         // Arrange
-        Guid id = new();
-
         _itemRepositoryMock.Setup(m => m.Get(id))
                         .ReturnsAsync((ItemEntity)null!);
 
@@ -72,7 +70,7 @@ public class ItemServiceTest
         var result = await _itemService.Get();
 
         //Assert
-        result.Count.Should().Be(quantity);
+        result.Count().Should().Be(quantity);
 
         _itemRepositoryMock.Verify(m => m.Get(), Times.Once());
     }
@@ -87,133 +85,124 @@ public class ItemServiceTest
         // Act Assert
         var result = await _itemService.Get();
 
-        result.Count.Should().Be(0);
+        result.Count().Should().Be(0);
 
         _itemRepositoryMock.Verify(m => m.Get(), Times.Once());
     }
 
     [Theory]
     [AutoData]
-    public async Task Add_GivenValidId_ReturnsGuid(Guid id, string name, decimal price)
+    public async Task Add_GivenValidId_ReturnsGuid(ItemEntity item)
     {
         //Arrange
         _itemRepositoryMock.Setup(m => m.Add(It.Is<ItemEntity>
-                                (x => x.Name == name && x.Price == price)))
-                                 .ReturnsAsync(id);
+                                (x => x.Name == item.Name && x.Price == item.Price)))
+                                 .ReturnsAsync(item.Id);
 
         //Act
-        Guid result = await _itemService.Add(new ItemAddRequest { Name = name, Price = price });
+        ItemModel itemAdd = new()
+        {
+            Name = item.Name,
+            Price = item.Price
+        };
+
+        Guid result = await _itemService.Add(itemAdd);
 
         //Assert
-        result.Should().Be(id);
+        result.Should().Be(item.Id);
 
         _itemRepositoryMock.Verify(m => m.Add(It.IsAny<ItemEntity>()), Times.Once());
     }
 
     [Theory]
     [AutoData]
-    public async Task Update_ReturnsSuccess(Guid id, string name, decimal price)
+    public async Task Update_ReturnsSuccess(ItemEntity item)
     {
         //Arrange
         _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>
-                                (x => x.Id == id && x.Name == name && x.Price == price)))
+                                (x => x.Id == item.Id && x.Name == item.Name && x.Price == item.Price)))
                                 .ReturnsAsync(1);
 
-        _itemRepositoryMock.Setup(m => m.Get(id))
-                                .ReturnsAsync(new ItemEntity
-                                { Id = id, Name = name, Price = price });
+        _itemRepositoryMock.Setup(m => m.Get(item.Id))
+                                .ReturnsAsync(item);
 
         //Act
+        ItemModel itemAdd = new()
+        {
+            Id = item.Id,
+            ShopId = item.ShopId,
+            Name = item.Name,
+            Price = item.Price
+        };
+
         //Assert
-        await _itemService.Invoking(x => x.Update(id, new ItemAddRequest
-        { Name = name, Price = price }))
+        await _itemService.Invoking(x => x.Update(itemAdd))
                                         .Should().NotThrowAsync<Exception>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
         _itemRepositoryMock.Verify(m => m.Update(It.IsAny<ItemEntity>()), Times.Once());
     }
 
-    [Fact]
-    public async Task Update_Invalid_InvalidOperationException()
+    [Theory]
+    [AutoData]
+    public async Task Update_InvalidId_NotFoundException(ItemEntity item)
     {
-        Guid id = new();
-        string name = "name";
-        decimal price = 5.98m;
-
         //Arrange
         _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>
-                                (x => x.Id == id && x.Name == name && x.Price == price)))
-                                .ReturnsAsync(2);
-
-        _itemRepositoryMock.Setup(m => m.Get(id))
-                             .ReturnsAsync(new ItemEntity { Id = id });
-
-        //Act
-        //Assert
-        await _itemService.Invoking(x => x.Update(id, new ItemAddRequest { Name = name, Price = price }))
-                            .Should().ThrowAsync<InvalidOperationException>();
-
-        _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
-        _itemRepositoryMock.Verify(m => m.Update(It.IsAny<ItemEntity>()), Times.Once());
-    }
-
-    [Fact]
-    public async Task Update_InvalidId_InvalidOperationException()
-    {
-        Guid id = new();
-        string name = "name";
-        decimal price = 5.98m;
-
-        //Arrange
-        _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>
-                                (x => x.Id == id && x.Name == name && x.Price == price)))
+                                (x => x.Id == item.Id && x.Name == item.Name && x.Price == item.Price)))
                                 .ReturnsAsync(1);
 
-        _itemRepositoryMock.Setup(m => m.Get(id))
+        _itemRepositoryMock.Setup(m => m.Get(item.Id))
                         .ReturnsAsync((ItemEntity)null!);
 
         //Act
+        ItemModel itemAdd = new()
+        {
+            Id = item.Id,
+            ShopId = item.ShopId,
+            Name = item.Name,
+            Price = item.Price
+        };
+
         //Assert
-        await _itemService.Invoking(x => x.Update(id, new ItemAddRequest { Name = name, Price = price }))
+        await _itemService.Invoking(x => x.Update(itemAdd))
                             .Should().ThrowAsync<NotFoundException>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
     }
 
-    [Fact]
-    public async Task Delete_ValidId()
+    [Theory]
+    [AutoData]
+    public async Task Delete_ValidId(ItemEntity item)
     {
-        Guid id = new();
-
         //Arrange
-        _itemRepositoryMock.Setup(m => m.Delete(id));
+        _itemRepositoryMock.Setup(m => m.Delete(item.Id));
 
-        _itemRepositoryMock.Setup(m => m.Get(id))
-                        .ReturnsAsync(new ItemEntity { Id = id }!);
+        _itemRepositoryMock.Setup(m => m.Get(item.Id))
+                        .ReturnsAsync(new ItemEntity { Id = item.Id }!);
 
         //Act
         //Assert
-        await _itemService.Invoking(x => x.Delete(id))
+        await _itemService.Invoking(x => x.Delete(item.Id))
                             .Should().NotThrowAsync<Exception>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());
         _itemRepositoryMock.Verify(m => m.Delete(It.IsAny<Guid>()), Times.Once());
     }
 
-    [Fact]
-    public async Task Delete_InvalidId_ThrowNotFoundException()
+    [Theory]
+    [AutoData]
+    public async Task Delete_InvalidId_ThrowNotFoundException(ItemEntity item)
     {
-        Guid id = new();
-
         //Arrange
-        _itemRepositoryMock.Setup(m => m.Delete(id));
+        _itemRepositoryMock.Setup(m => m.Delete(item.Id));
 
-        _itemRepositoryMock.Setup(m => m.Get(id))
+        _itemRepositoryMock.Setup(m => m.Get(item.Id))
                         .ReturnsAsync((ItemEntity)null!);
 
         //Act
         //Assert
-        await _itemService.Invoking(x => x.Delete(id))
+        await _itemService.Invoking(x => x.Delete(item.Id))
                             .Should().ThrowAsync<NotFoundException>();
 
         _itemRepositoryMock.Verify(m => m.Get(It.IsAny<Guid>()), Times.Once());

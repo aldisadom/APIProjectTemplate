@@ -19,7 +19,7 @@ public class ItemRepository : IItemRepository
         string sql = @"SELECT * FROM items
                         WHERE id=@Id";
 
-        return await _dbConnection.QuerySingleAsync<ItemEntity>(sql, new { id });
+        return await _dbConnection.QuerySingleOrDefaultAsync<ItemEntity>(sql, new { id });
     }
 
     public async Task<IEnumerable<ItemEntity>> Get()

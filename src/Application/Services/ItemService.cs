@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces;
-using Contracts.Requests;
-using Contracts.Responses;
+using Application.Models;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -16,41 +15,38 @@ public class ItemService : IItemService
         _itemRepository = itemRepository;
     }
 
-    public async Task<ItemResponce> Get(Guid id)
+    public async Task<ItemModel> Get(Guid id)
     {
-        ItemEntity item = await _itemRepository.Get(id) ?? throw new NotFoundException("Item not found in DB");
+        ItemEntity itemEntity = await _itemRepository.Get(id)
+            ?? throw new NotFoundException("Item not found in DB");
 
-        ItemResponce itemDto = new()
+        ItemModel itemResponse = new()
         {
             Id = id,
-            Name = item.Name,
-            Price = item.Price,
-            ShopId = item.ShopId,
+            Name = itemEntity.Name,
+            Price = itemEntity.Price,
+            ShopId = itemEntity.ShopId,
         };
 
-        return itemDto;
+        return itemResponse;
     }
 
-    public async Task<List<ItemResponce>> Get()
+    public async Task<IEnumerable<ItemModel>> Get()
     {
-        List<ItemResponce> items = [];
         IEnumerable<ItemEntity> itemEntities = await _itemRepository.Get();
 
-        if (!itemEntities.Any())
-            return [];
-
-        items = itemEntities.Select(i => new ItemResponce()
+        IEnumerable<ItemModel> items = itemEntities.Select(i => new ItemModel()
         {
             Id = i.Id,
             Name = i.Name,
             Price = i.Price,
             ShopId = i.ShopId,
-        }).ToList();
+        });
 
         return items;
     }
 
-    public async Task<Guid> Add(ItemAddRequest item)
+    public async Task<Guid> Add(ItemModel item)
     {
         ItemEntity itemEntity = new()
         {
@@ -61,22 +57,19 @@ public class ItemService : IItemService
         return await _itemRepository.Add(itemEntity);
     }
 
-    public async Task Update(Guid id, ItemAddRequest item)
+    public async Task Update(ItemModel item)
     {
-        await Get(id);
+        await Get(item.Id);
 
-        ItemEntity itemEntity = new()
+        ItemEntity itemEntity = new ItemEntity()
         {
-            Id = id,
+            Id = item.Id,
             Name = item.Name,
             Price = item.Price,
             ShopId = item.ShopId,
         };
 
-        int result = await _itemRepository.Update(itemEntity);
-
-        if (result > 1)
-            throw new InvalidOperationException("Update was performed on multiple rows");
+        await _itemRepository.Update(itemEntity);
     }
 
     public async Task Delete(Guid id)
@@ -84,41 +77,5 @@ public class ItemService : IItemService
         await Get(id);
 
         await _itemRepository.Delete(id);
-    }
-
-    public decimal GetItemsPrice(ItemResponce item, uint quantity)
-    {
-        if (quantity <= 0)
-            throw new ArgumentException("Amount must be more than 0");
-
-        decimal netAmount;
-        if (quantity > 20)
-            netAmount = 0.8m;
-        else if (quantity > 10)
-            netAmount = 0.9m;
-        else
-            netAmount = 1.0m;
-
-        return quantity * item.Price * netAmount;
-    }
-
-    public async Task AddToShop(Guid id, Guid shopId)
-    {
-        var itemTask = Get(id);
-
-        ItemResponce item = await itemTask;
-
-        ItemEntity itemEntity = new()
-        {
-            Id = id,
-            Name = item.Name,
-            Price = item.Price,
-            ShopId = shopId,
-        };
-
-        int result = await _itemRepository.Update(itemEntity);
-
-        if (result > 1)
-            throw new InvalidOperationException("Update was performed on multiple rows");
     }
 }

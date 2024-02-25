@@ -1,23 +1,26 @@
 using Application.Interfaces;
+using Application.Models;
 using Contracts.Requests;
 using Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
+using WebAPI.SwaggerExamples.Item;
 
 namespace WebAPI.Controllers;
 
 /// <summary>
-/// This is a sample controller for demonstrating XML comments in ASP.NET Core.
+/// This is a item controller
 /// </summary>
 [ApiController]
 [Route("v1/[controller]")]
-[ProducesResponseType(typeof(ErrorResponce), StatusCodes.Status500InternalServerError)]
+[ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
 public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
     private readonly ILogger<ItemController> _logger;
 
     /// <summary>
-    /// Default constructor
+    /// Constructor
     /// </summary>
     /// <param name="itemService"></param>
     /// <param name="logger"></param>
@@ -28,39 +31,75 @@ public class ItemController : ControllerBase
     }
 
     /// <summary>
+    /// Get one item
+    /// </summary>
+    /// <param name="id">Items unique ID</param>
+    /// <returns>item data</returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ItemResponse), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ItemResponseExample))]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        ItemModel item = await _itemService.Get(id);
+
+        ItemResponse result = new()
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Price = item.Price,
+            ShopId = item.ShopId,
+        };
+
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Gets all items
     /// </summary>
     /// <returns>list of items</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ItemResponce), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ItemListResponse), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ItemListResponseExample))]
     public async Task<IActionResult> Get()
     {
-        return Ok(await _itemService.Get());
+        IEnumerable<ItemModel> items = await _itemService.Get();
+
+        ItemListResponse result = new();
+
+        result.Items = items.Select(i => new ItemResponse()
+        {
+            Id = i.Id,
+            Name = i.Name,
+            Price = i.Price,
+            ShopId = i.ShopId,
+        }).ToList();
+
+        return Ok(result);
     }
 
     /// <summary>
-    /// Get single item
+    /// Add new item
     /// </summary>
-    /// <param name="id">Item ID</param>
-    /// <returns>Item properties</returns>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ItemResponce), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponce), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(Guid id)
-    {
-        return Ok(await _itemService.Get(id));
-    }
-
-    /// <summary>
-    /// Adds item to shop
-    /// </summary>
-    /// <param name="item">Item data to add</param>
-    /// <returns>ID of item</returns>
+    /// <param name="item">item data to add</param>
+    /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ItemAddResponse), StatusCodes.Status201Created)]
+    [SwaggerRequestExample(typeof(ItemAddResponseExample), typeof(ItemAddRequestExample))]
+    [SwaggerResponseExample(StatusCodes.Status201Created, typeof(ItemAddResponseExample))]
     public async Task<IActionResult> Add(ItemAddRequest item)
     {
-        Guid id = await _itemService.Add(item);
-        return CreatedAtAction(nameof(Get), new { id });
+        ItemModel itemModel = new()
+        {
+            Name = item.Name,
+            Price = item.Price,
+            ShopId = item.ShopId,
+        };
+
+        ItemAddResponse result = new()
+        {
+            Id = await _itemService.Add(itemModel),
+        };
+        return CreatedAtAction(nameof(Add), result);
     }
 }
