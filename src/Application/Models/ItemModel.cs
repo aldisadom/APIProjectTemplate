@@ -1,6 +1,6 @@
-﻿namespace Domain.Entities;
+﻿namespace Application.Models;
 
-public record ItemEntity
+public class ItemModel
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

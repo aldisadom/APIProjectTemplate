@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Contracts.Responses;
+﻿namespace Contracts.Responses;
 
 public class ItemResponse
 {

@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces;
-using Contracts.Requests;
-using Contracts.Responses;
+using Application.Models;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -16,12 +15,12 @@ public class ItemService : IItemService
         _itemRepository = itemRepository;
     }
 
-    public async Task<ItemResponse> Get(Guid id)
+    public async Task<ItemModel> Get(Guid id)
     {
-        ItemEntity itemEntity = await _itemRepository.Get(id) 
+        ItemEntity itemEntity = await _itemRepository.Get(id)
             ?? throw new NotFoundException("Item not found in DB");
 
-        ItemResponse itemResponse = new()
+        ItemModel itemResponse = new()
         {
             Id = id,
             Name = itemEntity.Name,
@@ -32,27 +31,22 @@ public class ItemService : IItemService
         return itemResponse;
     }
 
-    public async Task<ItemListResponse> Get()
+    public async Task<IEnumerable<ItemModel>> Get()
     {
-        
         IEnumerable<ItemEntity> itemEntities = await _itemRepository.Get();
 
-        ItemListResponse items = new ();
-        if (!itemEntities.Any())
-            return items;
-
-        items.Items = itemEntities.Select(i => new ItemResponse()
+        IEnumerable<ItemModel> items = itemEntities.Select(i => new ItemModel()
         {
             Id = i.Id,
             Name = i.Name,
             Price = i.Price,
             ShopId = i.ShopId,
-        }).ToList();
+        });
 
         return items;
     }
 
-    public async Task<Guid> Add(ItemAddRequest item)
+    public async Task<Guid> Add(ItemModel item)
     {
         ItemEntity itemEntity = new()
         {
@@ -63,14 +57,13 @@ public class ItemService : IItemService
         return await _itemRepository.Add(itemEntity);
     }
 
-    public async Task Update(Guid id, ItemAddRequest item)
+    public async Task Update(ItemModel item)
     {
-        ItemEntity itemEntity = await _itemRepository.Get(id)
-            ?? throw new NotFoundException("Item not found in DB");
+        await Get(item.Id);
 
-        itemEntity = new ItemEntity()
+        ItemEntity itemEntity = new ItemEntity()
         {
-            Id = id,
+            Id = item.Id,
             Name = item.Name,
             Price = item.Price,
             ShopId = item.ShopId,
@@ -81,8 +74,7 @@ public class ItemService : IItemService
 
     public async Task Delete(Guid id)
     {
-        ItemEntity itemEntity = await _itemRepository.Get(id)
-            ?? throw new NotFoundException("Item not found in DB");
+        await Get(id);
 
         await _itemRepository.Delete(id);
     }

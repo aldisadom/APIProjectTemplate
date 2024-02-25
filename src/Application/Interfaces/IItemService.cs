@@ -1,13 +1,12 @@
-﻿using Contracts.Requests;
-using Contracts.Responses;
+﻿using Application.Models;
 
 namespace Application.Interfaces;
 
 public interface IItemService
 {
-    Task<Guid> Add(ItemAddRequest item);
+    Task<Guid> Add(ItemModel item);
     Task Delete(Guid id);
-    Task<ItemListResponse> Get();
-    Task<ItemResponse> Get(Guid id);
-    Task Update(Guid id, ItemAddRequest item);
+    Task<IEnumerable<ItemModel>> Get();
+    Task<ItemModel> Get(Guid id);
+    Task Update(ItemModel item);
 }
