@@ -14,7 +14,7 @@ public class ItemListResponseExample : IExamplesProvider<ItemListResponse>
     /// <returns></returns>
     public ItemListResponse GetExamples()
     {
-        ItemListResponse ItemListResponse = new ();
+        ItemListResponse ItemListResponse = new();
 
         ItemListResponse.Items.Add(new ItemResponse()
         {
