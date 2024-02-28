@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Responses;
 
-public class ItemAddResponse
+public record AddResponse
 {
     public Guid Id { get; set; }
 }

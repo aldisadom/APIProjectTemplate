@@ -39,13 +39,13 @@ public class ItemRepository : IItemRepository
         return await _dbConnection.ExecuteScalarAsync<Guid>(sql, item);
     }
 
-    public async Task<int> Update(ItemEntity item)
+    public async Task Update(ItemEntity item)
     {
         string sql = @"UPDATE items
                         SET name=@Name, price=@Price, shop_id=@ShopId
                         WHERE id=@Id";
 
-        return await _dbConnection.ExecuteAsync(sql, item);
+        await _dbConnection.ExecuteAsync(sql, item);
     }
 
     public async Task Delete(Guid id)

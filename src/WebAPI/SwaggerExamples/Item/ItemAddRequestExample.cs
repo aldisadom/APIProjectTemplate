@@ -1,4 +1,5 @@
-﻿using Contracts.Requests;
+﻿using Contracts.Requests.Item;
+using Contracts.Responses;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace WebAPI.SwaggerExamples.Item;

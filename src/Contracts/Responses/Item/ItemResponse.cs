@@ -1,6 +1,6 @@
-﻿namespace Contracts.Responses;
+﻿namespace Contracts.Responses.Item;
 
-public class ItemResponse
+public record ItemResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

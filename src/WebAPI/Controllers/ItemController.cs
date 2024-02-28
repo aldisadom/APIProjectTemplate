@@ -1,7 +1,8 @@
 using Application.Interfaces;
 using Application.Models;
-using Contracts.Requests;
+using Contracts.Requests.Item;
 using Contracts.Responses;
+using Contracts.Responses.Item;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using WebAPI.SwaggerExamples.Item;
@@ -81,24 +82,24 @@ public class ItemController : ControllerBase
     /// <summary>
     /// Add new item
     /// </summary>
-    /// <param name="item">item data to add</param>
+    /// <param name="itemAdd">item data to add</param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ItemAddResponse), StatusCodes.Status201Created)]
-    [SwaggerRequestExample(typeof(ItemAddResponseExample), typeof(ItemAddRequestExample))]
+    [ProducesResponseType(typeof(AddResponse), StatusCodes.Status201Created)]
+    [SwaggerRequestExample(typeof(ItemAddRequest), typeof(ItemAddRequestExample))]
     [SwaggerResponseExample(StatusCodes.Status201Created, typeof(ItemAddResponseExample))]
-    public async Task<IActionResult> Add(ItemAddRequest item)
+    public async Task<IActionResult> Add(ItemAddRequest itemAdd)
     {
-        ItemModel itemModel = new()
+        ItemModel item = new()
         {
-            Name = item.Name,
-            Price = item.Price,
-            ShopId = item.ShopId,
+            Name = itemAdd.Name,
+            Price = itemAdd.Price,
+            ShopId = itemAdd.ShopId,
         };
 
-        ItemAddResponse result = new()
+        AddResponse result = new()
         {
-            Id = await _itemService.Add(itemModel),
+            Id = await _itemService.Add(item),
         };
         return CreatedAtAction(nameof(Add), result);
     }

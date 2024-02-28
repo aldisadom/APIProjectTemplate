@@ -120,8 +120,7 @@ public class ItemServiceTest
     {
         //Arrange
         _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>
-                                (x => x.Id == item.Id && x.Name == item.Name && x.Price == item.Price)))
-                                .ReturnsAsync(1);
+                                (x => x.Id == item.Id && x.Name == item.Name && x.Price == item.Price)));
 
         _itemRepositoryMock.Setup(m => m.Get(item.Id))
                                 .ReturnsAsync(item);
@@ -149,8 +148,7 @@ public class ItemServiceTest
     {
         //Arrange
         _itemRepositoryMock.Setup(m => m.Update(It.Is<ItemEntity>
-                                (x => x.Id == item.Id && x.Name == item.Name && x.Price == item.Price)))
-                                .ReturnsAsync(1);
+                                (x => x.Id == item.Id && x.Name == item.Name && x.Price == item.Price)));
 
         _itemRepositoryMock.Setup(m => m.Get(item.Id))
                         .ReturnsAsync((ItemEntity)null!);

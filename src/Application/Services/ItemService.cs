@@ -20,7 +20,7 @@ public class ItemService : IItemService
         ItemEntity itemEntity = await _itemRepository.Get(id)
             ?? throw new NotFoundException("Item not found in DB");
 
-        ItemModel itemResponse = new()
+        ItemModel item = new()
         {
             Id = id,
             Name = itemEntity.Name,
@@ -28,7 +28,7 @@ public class ItemService : IItemService
             ShopId = itemEntity.ShopId,
         };
 
-        return itemResponse;
+        return item;
     }
 
     public async Task<IEnumerable<ItemModel>> Get()
@@ -61,7 +61,7 @@ public class ItemService : IItemService
     {
         await Get(item.Id);
 
-        ItemEntity itemEntity = new ItemEntity()
+        ItemEntity itemEntity = new ()
         {
             Id = item.Id,
             Name = item.Name,

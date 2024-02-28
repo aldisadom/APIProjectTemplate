@@ -1,4 +1,5 @@
 ﻿using Contracts.Responses;
+using Contracts.Responses.Item;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace WebAPI.SwaggerExamples.Item;
@@ -14,7 +15,7 @@ public class ItemListResponseExample : IExamplesProvider<ItemListResponse>
     /// <returns></returns>
     public ItemListResponse GetExamples()
     {
-        ItemListResponse ItemListResponse = new();
+        ItemListResponse ItemListResponse = new ();
 
         ItemListResponse.Items.Add(new ItemResponse()
         {
